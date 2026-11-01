@@ -132,8 +132,30 @@ useEffect(() => {
   {p.price != null
     ? `${p.price.toLocaleString()}원`
     : "가격 확인"}
-</p>
-              <span style={{ fontSize: 12, color: "#888" }}>상품 준비 중</span>
+</p>{p.affiliate_url ? (
+  <a
+    href={p.affiliate_url}
+    target="_blank"
+    rel="noopener noreferrer sponsored"
+    style={{
+      display: "block",
+      marginTop: 12,
+      padding: "12px",
+      background: "#172B35",
+      color: "white",
+      borderRadius: 8,
+      textAlign: "center",
+      textDecoration: "none",
+      fontWeight: "bold"
+    }}
+  >
+    쿠팡에서 구매하기
+  </a>
+) : (
+  <span style={{ fontSize: 12, color: "#888" }}>
+    상품 준비 중
+  </span>
+)}
             </article>
           ))}
         </div>
