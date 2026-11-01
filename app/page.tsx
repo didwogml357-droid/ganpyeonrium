@@ -1,18 +1,50 @@
  
 "use client";
 
-import { useState } from "react";
 
-const products = [
-  { name: "싱크대 슬라이딩 수납장", category: "간편리빙", price: "가격 확인", icon: "🗄️" },
-  { name: "전동 청소솔", category: "간편리빙", price: "가격 확인", icon: "🧽" },
-  { name: "미니 라벨 프린터", category: "간편테크", price: "가격 확인", icon: "🏷️" },
-  { name: "모션센서 LED 조명", category: "간편테크", price: "가격 확인", icon: "💡" },
-  { name: "미니 무선 청소기", category: "간편테크", price: "가격 확인", icon: "✨" },
-  { name: "접이식 식기 건조대", category: "간편리빙", price: "가격 확인", icon: "🍽️" },
-];
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+
+
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number | null;
+  image_url: string | null;
+  affiliate_url: string | null;
+};
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 export default function Home() {
+ 
+const [products, setProducts] = useState<Product[]>([]);
+
+useEffect(() => {
+  async function loadProducts() {
+    const { data, error } = await supabase
+      .from("products")
+      .select("id,name,category,price,image_url,affiliate_url")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("상품 조회 오류:", error.message);
+      return;
+    }
+
+    setProducts(data ?? []);
+  }
+
+  loadProducts();
+}, []);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("전체");
 
@@ -74,13 +106,33 @@ export default function Home() {
               background: "white", border: "1px solid #eee",
               borderRadius: 14, padding: 18
             }}>
-              <div style={{
-                fontSize: 52, background: "#F0F0E9",
-                textAlign: "center", padding: 25, borderRadius: 10
-              }}>{p.icon}</div>
+           <div style={{
+  background: "#F0F0E9",
+  textAlign: "center",
+  padding: 25,
+  borderRadius: 10
+}}>
+  {p.image_url ? (
+    <img
+      src={p.image_url}
+      alt={p.name}
+      style={{
+        width: "100%",
+        height: 90,
+        objectFit: "contain"
+      }}
+    />
+  ) : (
+    <span>🛍️</span>
+  )}
+</div>
               <p style={{ color: "#668782", fontSize: 13 }}>{p.category}</p>
               <h3 style={{ fontSize: 16 }}>{p.name}</h3>
-              <p>{p.price}</p>
+              <p>{p.price}</p><p>
+  {p.price != null
+    ? `${p.price.toLocaleString()}원`
+    : "가격 확인"}
+</p>
               <span style={{ fontSize: 12, color: "#888" }}>상품 준비 중</span>
             </article>
           ))}
