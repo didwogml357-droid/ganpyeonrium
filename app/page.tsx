@@ -129,7 +129,7 @@ useEffect(() => {
               <p style={{ color: "#668782", fontSize: 13 }}>{p.category}</p>
               <h3 style={{ fontSize: 16 }}>{p.name}</h3>
               <p>{p.price}</p><p>
-  {p.price != null
+ 
     ? `${p.price.toLocaleString()}원`
     : "가격 확인"}
 </p>{p.affiliate_url ? (
